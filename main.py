@@ -43,8 +43,20 @@ def bypass_frp(device):
             print("Exiting FRP bypass mode...")
             break
 
-def monitor_device_insertion():
-    print("Monitoring for new devices...")
+def monitor_device_insertion_recovery():
+    print("Monitoring for new devices and rebooting to recovery mode...")
+    last_devices = []
+    while True:
+        devices = list_devices()
+        if devices and devices != last_devices:
+            print(f"New device detected: {devices[0]}")
+            reboot_to_recovery(devices[0])
+            last_devices = devices
+            break  # If you don't wanna to get back to the options remove the `break`
+        time.sleep(2)  # Check every 2 seconds for new devices
+
+def monitor_device_insertion_frp():
+    print("Monitoring for new devices and bypassing FRP...")
     while True:
         devices = list_devices()
         if devices:
@@ -58,7 +70,8 @@ def main():
         print("1. List connected devices")
         print("2. Reboot device into recovery mode")
         print("3. Continuously bypass FRP on inserted device")
-        print("4. Exit")
+        print("4. Continuously reboot inserted device into recovery mode")
+        print("5. Exit")
 
         choice = input("Choose an option: ")
         
@@ -74,9 +87,12 @@ def main():
                 reboot_to_recovery(device)
 
         elif choice == "3":
-            monitor_device_insertion()
+            monitor_device_insertion_frp()
 
         elif choice == "4":
+            monitor_device_insertion_recovery()
+
+        elif choice == "5":
             print("Exiting script.")
             break
         
